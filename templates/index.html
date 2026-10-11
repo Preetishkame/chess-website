@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zero Period Chess</title>
+    
+    <!-- Favicon using SVG Data URI -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♟️</text></svg>">
+
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='responsive.css') }}">
+</head>
+<body class="chess-app">
+    <!-- Sidebar Overlay for Mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- App Container -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar" aria-label="Main Navigation">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <span class="logo-icon" aria-hidden="true">♔</span>
+                    <span class="logo-text">Zero Period Chess</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="#home" class="nav-link active" data-target="homeSection">
+                            <span class="nav-icon" aria-hidden="true">🏠</span>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#play" class="nav-link" id="navPlayChess">
+                            <span class="nav-icon" aria-hidden="true">♟️</span>
+                            <span>Play Chess</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#computer" class="nav-link" id="navPlayBot">
+                            <span class="nav-icon" aria-hidden="true">🤖</span>
+                            <span>Play Computer</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#online" class="nav-link" id="navPlayOnline">
+                            <span class="nav-icon" aria-hidden="true">🌐</span>
+                            <span>Online Multiplayer</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#leaderboard" class="nav-link" data-target="statsSection">
+                            <span class="nav-icon" aria-hidden="true">🏆</span>
+                            <span>Leaderboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#history" class="nav-link" data-target="historySection">
+                            <span class="nav-icon" aria-hidden="true">📜</span>
+                            <span>Game History</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile" class="nav-link" data-target="profileSection">
+                            <span class="nav-icon" aria-hidden="true">👤</span>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#settings" class="nav-link" data-target="settingsSection">
+                            <span class="nav-icon" aria-hidden="true">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+            <!-- Top Navigation Bar -->
+            <header class="top-nav">
+                <div class="top-nav-left">
+                    <button id="menuButton" class="icon-button menu-toggle" aria-label="Toggle Navigation Menu">
+                        <span aria-hidden="true">☰</span>
+                    </button>
+                    <h1 id="pageTitle" class="page-title">Dashboard</h1>
+                </div>
+                <div class="top-nav-right">
+                    <button id="themeToggle" class="icon-button theme-toggle-btn" aria-label="Toggle Light/Dark Theme" title="Toggle theme">
+                        <span aria-hidden="true">🌓</span>
+                    </button>
+                    <div class="user-profile-badge" id="topProfileBadge" aria-label="Account Profile">
+                        <span class="profile-avatar" aria-hidden="true">👤</span>
+                        <span id="profileName" class="profile-name">Guest</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Dynamic View Area -->
+            <main class="content-area">
+                <!-- Toast Notifications Container -->
+                <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+                <!-- Home Section -->
+                <section id="homeSection" class="app-section active">
+                    <!-- Hero Banner -->
+                    <div class="hero-banner card">
+                        <div class="hero-content">
+                            <h2 class="hero-title">Think smart. Play better.</h2>
+                            <p class="hero-subtitle">Challenge bots, play with friends worldwide, and sharpen your tactics on Zero Period Chess.</p>
+                            <div class="hero-actions">
+                                <button id="heroPlayButton" class="btn btn-primary btn-lg">Play Now</button>
+                            </div>
+                        </div>
+                        <div class="hero-graphic" aria-hidden="true">
+                            <span class="hero-piece">♞</span>
+                        </div>
+                    </div>
+
+                    <!-- Account / Auth Panel -->
+                    <div class="card account-panel" aria-label="Account">
+                        <div class="account-panel-intro">
+                            <h3>Player Account</h3>
+                            <p class="text-muted" id="accountStatusText">Sign in or register to record your games, track wins, and join the leaderboard.</p>
+                        </div>
+                        <div class="account-fields" id="accountFields">
+                            <label><span class="sr-only">Username</span><input id="accountUsername" autocomplete="username" placeholder="Username" maxlength="24"></label>
+                            <label><span class="sr-only">Password</span><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Password (10+ characters)"></label>
+                            <button id="registerButton" class="btn btn-outline" type="button">Create account</button>
+                            <button id="loginButton" class="btn btn-secondary" type="button">Log in</button>
+                            <button id="logoutButton" class="btn btn-ghost" type="button" hidden>Log out</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card card">
+                            <div class="stat-icon" aria-hidden="true">🎮</div>
+                            <div class="stat-info">
+                                <span class="stat-label">Games Played</span>
+                                <span id="gamesPlayed" class="stat-value">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon" aria-hidden="true">🏆</div>
+                            <div class="stat-info">
+                                <span class="stat-label">Wins</span>
+                                <span id="gamesWon" class="stat-value">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon" aria-hidden="true">🛡️</div>
+                            <div class="stat-info">
+                                <span class="stat-label">Losses</span>
+                                <span id="gamesLost" class="stat-value">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon" aria-hidden="true">🤝</div>
+                            <div class="stat-info">
+                                <span class="stat-label">Draws</span>
+                                <span id="gamesDrawn" class="stat-value">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon" aria-hidden="true">📈</div>
+                            <div class="stat-info">
+                                <span class="stat-label">Win Rate</span>
+                                <span id="winRate" class="stat-value">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Mode Selection Cards -->
+                    <div class="section-header">
+                        <h3>Game Modes</h3>
+                    </div>
+                    <div class="modes-grid">
+                        <!-- Play vs Bot -->
+                        <div class="mode-card card">
+                            <div class="mode-icon" aria-hidden="true">🤖</div>
+                            <h4>Play vs Bot</h4>
+                            <p>Challenge our computer opponent with tailored difficulty settings.</p>
+                            <div class="mode-controls">
+                                <div class="form-group">
+                                    <label for="botDifficulty" class="sr-only">Bot Difficulty</label>
+                                    <select id="botDifficulty" class="form-select">
+                                        <option value="easy">Easy (Casual)</option>
+                                        <option value="medium" selected>Medium (Tactical)</option>
+                                        <option value="hard">Hard (Search Minimax)</option>
+                                    </select>
+                                </div>
+                                <button id="botPlayButton" class="btn btn-secondary w-100" type="button">Play Bot</button>
+                            </div>
+                        </div>
+
+                        <!-- Play Online -->
+                        <div class="mode-card card">
+                            <div class="mode-icon" aria-hidden="true">🌐</div>
+                            <h4>Play Online</h4>
+                            <p>Create a live multiplayer room with real-time moves and clocks.</p>
+                            <div class="mode-controls">
+                                <button id="onlinePlayButton" class="btn btn-secondary w-100 mt-auto" type="button">Create Online Room</button>
+                            </div>
+                        </div>
+
+                        <!-- Play with a Friend -->
+                        <div class="mode-card card">
+                            <div class="mode-icon" aria-hidden="true">👥</div>
+                            <h4>Play with a Friend</h4>
+                            <p>Join a friend's room with a 5-letter code or play 2-player locally on this device.</p>
+                            <div class="mode-controls">
+                                <button id="friendPlayButton" class="btn btn-secondary w-100" type="button">Join Room</button>
+                                <button id="localPlayButton" class="btn btn-outline w-100" type="button">Local 2-player</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dedicated Chess Game Area -->
+                <section id="gameSection" class="app-section">
+                    <div class="game-container">
+                        <!-- Left/Main Board Area -->
+                        <div class="board-wrapper">
+                            <!-- Opponent Info & Clock -->
+                            <div class="player-hud opponent-hud card" id="opponentHud">
+                                <div class="player-meta">
+                                    <span class="player-avatar-sm" aria-hidden="true" id="opponentAvatar">🤖</span>
+                                    <div class="player-details">
+                                        <span id="opponentName" class="player-name-text">Opponent</span>
+                                        <span id="opponentCaptured" class="captured-pieces" aria-label="Captured pieces"></span>
+                                    </div>
+                                </div>
+                                <div id="opponentTimer" class="clock-display" aria-label="Opponent Clock">10:00</div>
+                            </div>
+
+                            <!-- Chessboard Container with Coordinates -->
+                            <div class="board-frame card">
+                                <div id="chessboard" class="chessboard-container" role="application" aria-label="Chess Board">
+                                    <!-- Board squares rendered dynamically via JavaScript -->
+                                    <div class="board-placeholder-state">
+                                        <p>Start a game to play.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Player Info & Clock -->
+                            <div class="player-hud player-hud card" id="playerHud">
+                                <div class="player-meta">
+                                    <span class="player-avatar-sm" aria-hidden="true" id="playerAvatar">👤</span>
+                                    <div class="player-details">
+                                        <span id="playerName" class="player-name-text">You (White)</span>
+                                        <span id="playerCaptured" class="captured-pieces" aria-label="Captured pieces"></span>
+                                    </div>
+                                </div>
+                                <div id="playerTimer" class="clock-display" aria-label="Player Clock">10:00</div>
+                            </div>
+                        </div>
+
+                        <!-- Right Sidebar: Game Status, Move History & Controls -->
+                        <div class="game-sidebar card">
+                            <div class="game-status-header">
+                                <div class="status-top-row">
+                                    <div id="turnIndicator" class="turn-badge" aria-live="polite">White to move</div>
+                                    <span id="gameModeBadge" class="game-mode-pill">Bot: Medium</span>
+                                </div>
+                                <div id="gameMessage" class="game-message" aria-live="polite">Game in progress</div>
+                                <div id="roomCodeDisplay" class="room-code" hidden>
+                                    <span>Room:</span>
+                                    <strong id="roomCodeText"></strong>
+                                    <button id="copyRoomButton" class="btn btn-outline btn-xs" type="button" title="Copy room code">Copy</button>
+                                </div>
+                            </div>
+
+                            <div class="move-history-section">
+                                <div class="history-header">
+                                    <span>Move History</span>
+                                    <span class="move-counter"><span id="moveCount">0</span> turns</span>
+                                </div>
+                                <div id="moveHistory" class="move-history-list" role="log" aria-label="Move History Log">
+                                    <!-- Populated dynamically -->
+                                    <div class="history-empty text-muted">No moves yet.</div>
+                                </div>
+                            </div>
+
+                            <div class="game-controls-toolbar">
+                                <div class="time-control-group" id="clockSettingWrapper">
+                                    <label for="clockSetting" class="clock-setting-label">Time Control:</label>
+                                    <select id="clockSetting" class="form-select">
+                                        <option value="60">1 min (Bullet)</option>
+                                        <option value="180">3 min (Blitz)</option>
+                                        <option value="300">5 min (Blitz)</option>
+                                        <option value="600" selected>10 min (Rapid)</option>
+                                        <option value="900">15 min (Rapid)</option>
+                                        <option value="0">No clock</option>
+                                    </select>
+                                </div>
+                                <div class="controls-action-row">
+                                    <button id="undoButton" class="btn btn-outline" type="button" title="Undo Move">↺ Undo</button>
+                                    <button id="drawButton" class="btn btn-outline" type="button" title="Offer Draw" hidden>½ Draw</button>
+                                    <button id="flipBoardButton" class="btn btn-outline" type="button" title="Flip Board">⇅ Flip</button>
+                                    <button id="resignButton" class="btn btn-danger-outline" type="button" title="Resign Game">⚐ Resign</button>
+                                </div>
+                                <button id="newGameButton" class="btn btn-primary w-100" type="button">New Game</button>
+                                <button id="backToHomeButton" class="btn btn-ghost w-100" type="button">Exit to Home</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Leaderboard Section -->
+                <section id="statsSection" class="app-section">
+                    <div class="card p-4">
+                        <div class="section-title-wrap">
+                            <h2>🏆 Leaderboard</h2>
+                            <p class="text-muted">Recorded tournament and bot results from registered players.</p>
+                        </div>
+                        <div id="leaderboardContent" class="leaderboard-wrap" aria-live="polite">Loading leaderboard…</div>
+                    </div>
+                </section>
+
+                <!-- Game History Section -->
+                <section id="historySection" class="app-section">
+                    <div class="card p-4">
+                        <div class="section-title-wrap">
+                            <h2>📜 Game History</h2>
+                            <p class="text-muted">Review your recent matches and move notations.</p>
+                        </div>
+                        <div id="historyContent" class="history-wrap" aria-live="polite">Sign in to view your saved games.</div>
+                    </div>
+                </section>
+
+                <!-- Profile Section -->
+                <section id="profileSection" class="app-section">
+                    <div class="card p-4">
+                        <div class="section-title-wrap">
+                            <h2>👤 Player Profile</h2>
+                            <p class="text-muted">Account summary and game performance statistics.</p>
+                        </div>
+                        <div id="profileDetails" class="profile-summary-wrap">
+                            <div class="profile-card-header">
+                                <span class="profile-avatar-lg" aria-hidden="true">👤</span>
+                                <div>
+                                    <h3 id="profileUsernameHeader">Guest</h3>
+                                    <span class="badge" id="profileAccountStatus">Unregistered</span>
+                                </div>
+                            </div>
+                            <div class="profile-stats-grid">
+                                <div class="stat-card card">
+                                    <span class="stat-label">Total Matches</span>
+                                    <span id="profGames" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-card card">
+                                    <span class="stat-label">Wins</span>
+                                    <span id="profWins" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-card card">
+                                    <span class="stat-label">Losses</span>
+                                    <span id="profLosses" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-card card">
+                                    <span class="stat-label">Draws</span>
+                                    <span id="profDraws" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-card card">
+                                    <span class="stat-label">Win Percentage</span>
+                                    <span id="profWinRate" class="stat-value">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settingsSection" class="app-section">
+                    <div class="card p-4">
+                        <div class="section-title-wrap">
+                            <h2>⚙️ Settings & Preferences</h2>
+                            <p class="text-muted">Customize your board appearance and behavior.</p>
+                        </div>
+                        <div class="settings-list">
+                            <div class="setting-item card p-3">
+                                <div class="setting-info">
+                                    <strong>Color Theme</strong>
+                                    <p class="text-muted">Switch between dark mode and clean high-contrast light mode.</p>
+                                </div>
+                                <select id="settingsThemeSelect" class="form-select form-select-sm">
+                                    <option value="dark">Dark Theme</option>
+                                    <option value="light">Light Theme</option>
+                                </select>
+                            </div>
+                            <div class="setting-item card p-3">
+                                <div class="setting-info">
+                                    <strong>Board Coordinates</strong>
+                                    <p class="text-muted">Display rank and file labels (a-h, 1-8) along the edges of the board.</p>
+                                </div>
+                                <label class="switch-label">
+                                    <input type="checkbox" id="settingCoordsToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item card p-3">
+                                <div class="setting-info">
+                                    <strong>Sound Effects</strong>
+                                    <p class="text-muted">Play chess audio when pieces move, capture, or give check.</p>
+                                </div>
+                                <label class="switch-label">
+                                    <input type="checkbox" id="settingSoundToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Pawn Promotion Modal Dialog -->
+    <div id="promotionModal" class="promotion-modal-backdrop" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Pawn Promotion">
+        <div class="promotion-dialog card">
+            <h3>Choose Promotion</h3>
+            <p class="text-muted">Select the piece to replace your pawn.</p>
+            <div class="promotion-choices">
+                <button type="button" class="promo-btn" data-promo="q" aria-label="Queen"><span class="promo-piece" id="promoQueen">♕</span><span>Queen</span></button>
+                <button type="button" class="promo-btn" data-promo="r" aria-label="Rook"><span class="promo-piece" id="promoRook">♖</span><span>Rook</span></button>
+                <button type="button" class="promo-btn" data-promo="b" aria-label="Bishop"><span class="promo-piece" id="promoBishop">♗</span><span>Bishop</span></button>
+                <button type="button" class="promo-btn" data-promo="n" aria-label="Knight"><span class="promo-piece" id="promoKnight">♘</span><span>Knight</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal Dialog -->
+    <div id="confirmModal" class="confirm-modal-backdrop" hidden aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="confirm-dialog card">
+            <h3 id="confirmTitle">Confirm Action</h3>
+            <p id="confirmMessage" class="text-muted">Are you sure?</p>
+            <div class="confirm-actions">
+                <button type="button" class="btn btn-outline" id="confirmCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmOkBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Integration in Correct Order -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='bot.js') }}"></script>
+    <script src="{{ url_for('static', filename='multiplayer.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

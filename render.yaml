@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: chess-arena
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --worker-class gthread --workers 1 --threads 100 app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: chess-arena-db
+          property: connectionString
+      - key: COOKIE_SECURE
+        value: "1"
+databases:
+  - name: chess-arena-db
+    databaseName: chess_arena
+    user: chess_arena
+    plan: free

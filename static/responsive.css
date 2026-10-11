@@ -1,0 +1,178 @@
+/* ============================================================
+   ZERO PERIOD CHESS — RESPONSIVE STYLESHEET
+   Mobile, Tablet, and Compact Screen Optimizations
+   ============================================================ */
+
+/* ── Tablet (≤ 980px) ── */
+@media (max-width: 980px) {
+  :root {
+    --sidebar-width: 200px;
+  }
+
+  .game-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    max-height: none;
+    gap: 1rem;
+  }
+
+  .game-sidebar {
+    height: auto;
+    max-height: 480px;
+  }
+
+  .board-wrapper {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .player-hud {
+    width: 100%;
+  }
+
+  .board-frame {
+    width: 100%;
+  }
+
+  .hero-banner {
+    padding: 1.75rem 1.5rem;
+  }
+  .hero-title { font-size: 1.7rem; }
+  .hero-graphic { font-size: 5rem; }
+}
+
+/* ── Mobile (≤ 768px) ── */
+@media (max-width: 768px) {
+  html, body {
+    overflow: auto;
+  }
+
+  /* Offcanvas Mobile Navigation */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    height: 100%;
+    z-index: 250;
+    box-shadow: var(--shadow);
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.overlay-visible {
+    display: block;
+  }
+
+  .app-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .main-wrapper {
+    width: 100%;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .content-area {
+    padding: 0.85rem;
+  }
+
+  .hero-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.35rem 1rem;
+    gap: 0.5rem;
+  }
+  .hero-graphic { display: none; }
+  .hero-title { font-size: 1.35rem; }
+
+  .account-panel {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+  .account-fields {
+    width: 100%;
+  }
+  .account-fields input {
+    flex: 1 1 120px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .stat-card {
+    padding: 0.85rem;
+  }
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .modes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Game Mobile Experience */
+  .game-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .board-wrapper {
+    width: 100%;
+  }
+
+  .player-hud {
+    width: 100%;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .player-name-text {
+    font-size: 0.88rem;
+  }
+  .clock-display {
+    font-size: 1.25rem;
+    padding: 0.15rem 0.55rem;
+  }
+
+  .board-frame {
+    width: 100%;
+    padding: 4px;
+  }
+
+  .piece {
+    font-size: clamp(1.8rem, 10vw, 3.2rem);
+  }
+
+  .square-coord {
+    font-size: 0.55rem;
+  }
+
+  .game-sidebar {
+    max-height: 380px;
+  }
+
+  .controls-action-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* ── Small Mobile (≤ 420px) ── */
+@media (max-width: 420px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .controls-action-row .btn {
+    padding: 0.45rem 0.4rem;
+    font-size: 0.8rem;
+  }
+}
